@@ -34,7 +34,7 @@ The project was created as part of a Web Technology mini project to:
 
 ## 📈 Output Screenshot
 Below is an example run of the project:
-![Output Screenshot]("Screenshot%2026-01-04163033.png")
+![Output Screenshot](Screenshot%202026-01-04%20163033.png)
 ## 🛠️ Tech Stack
 - **HTML** – Structure  
 - **CSS** – Styling (light/dark mode, responsive design)  
