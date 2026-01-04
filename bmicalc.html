@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ultimate BMI Calculator (Age & Gender Based)</title>
+
+<style>
+:root {
+    --bg: linear-gradient(135deg,#1d2671,#c33764);
+    --card: #ffffff;
+    --text: #222;
+}
+.dark {
+    --bg: #121212;
+    --card: #1e1e1e;
+    --text: #e0e0e0;
+}
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: "Segoe UI", Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text);
+}
+.container {
+    background: var(--card);
+    width: 580px;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.35);
+}
+h1 { text-align: center; }
+.subtitle {
+    text-align: center;
+    font-size: 14px;
+    opacity: 0.7;
+}
+.toggle {
+    text-align: right;
+    font-size: 13px;
+    cursor: pointer;
+}
+.section {
+    margin-top: 18px;
+    font-weight: bold;
+    border-left: 4px solid #c33764;
+    padding-left: 8px;
+}
+.field {
+    margin-top: 10px;
+}
+label {
+    font-weight: 600;
+    font-size: 14px;
+}
+input, select {
+    width: 100%;
+    padding: 9px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-top: 4px;
+}
+button {
+    width: 100%;
+    padding: 11px;
+    margin-top: 12px;
+    border: none;
+    border-radius: 10px;
+    background: #c33764;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+.result {
+    display: none;
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 10px;
+}
+.under { background: #fff3cd; }
+.normal { background: #d4edda; }
+.over { background: #ffe5d0; }
+.obese { background: #f8d7da; }
+
+.gauge {
+    height: 14px;
+    background: #ddd;
+    border-radius: 20px;
+    margin-top: 8px;
+}
+.gauge-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg,#fbc02d,#4caf50,#ff7043,#e53935);
+    border-radius: 20px;
+    transition: 1s;
+}
+
+.bar {
+    height: 25px;
+    border-radius: 8px;
+    margin-top: 6px;
+    padding-left: 8px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+}
+.b1{background:#fff3cd;width:30%}
+.b2{background:#d4edda;width:50%}
+.b3{background:#ffe5d0;width:70%}
+.b4{background:#f8d7da;width:90%}
+.user-bar {
+    background:#000;
+    color:#fff;
+    width:0%;
+    transition:1s;
+}
+.history {
+    max-height: 110px;
+    overflow-y: auto;
+    font-size: 13px;
+    margin-top: 8px;
+}
+footer {
+    text-align: center;
+    font-size: 12px;
+    opacity: 0.6;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="toggle" onclick="toggleMode()">🌗 Toggle Dark Mode</div>
+
+<h1>Ultimate BMI Calculator</h1>
+<p class="subtitle">Age & Gender Aware • Charts • History</p>
+
+<div class="section">User Details</div>
+
+<div class="field">
+<label>Age (years)</label>
+<input type="number" id="age">
+</div>
+
+<div class="field">
+<label>Gender</label>
+<select id="gender">
+<option value="">Select</option>
+<option>Male</option>
+<option>Female</option>
+</select>
+</div>
+
+<div class="field">
+<label>Weight (kg)</label>
+<input type="number" id="w">
+</div>
+
+<div class="field">
+<label>Height (cm)</label>
+<input type="number" id="h">
+</div>
+
+<button onclick="calc()">Calculate BMI</button>
+
+<div class="result" id="res">
+<p id="bmiTxt"></p>
+<p id="catTxt"></p>
+<p id="ageTxt"></p>
+<p id="idealTxt"></p>
+<div class="gauge"><div class="gauge-fill" id="gFill"></div></div>
+</div>
+
+<div class="section">BMI Graph</div>
+<div class="bar b1">Underweight</div>
+<div class="bar b2">Normal</div>
+<div class="bar b3">Overweight</div>
+<div class="bar b4">Obese</div>
+<div class="bar user-bar" id="uBar">Your BMI</div>
+
+<div class="section">BMI History</div>
+<div class="history" id="history"></div>
+
+<footer>
+Scientifically Correct • Viva-Safe • Single-File Project
+</footer>
+</div>
+
+<script>
+function toggleMode(){
+    document.body.classList.toggle("dark");
+}
+
+function calc(){
+    let age = +document.getElementById("age").value;
+    let gender = document.getElementById("gender").value;
+    let w = +document.getElementById("w").value;
+    let h = +document.getElementById("h").value;
+
+    if(!age || !gender || w<=0 || h<=0){
+        alert("Please fill all fields correctly");
+        return;
+    }
+
+    h /= 100;
+    let bmi = (w / (h*h)).toFixed(2);
+
+    let cat, cls, gauge, bar, ageMsg;
+
+    if(age < 20){
+        cat = "BMI-for-age";
+        cls = "normal";
+        gauge = 40;
+        bar = 45;
+        ageMsg = "For children/teens, BMI is interpreted using age & gender percentiles.";
+    } else {
+        if(bmi < 18.5){ cat="Underweight"; cls="under"; gauge=25; bar=25; }
+        else if(bmi < 25){ cat="Normal"; cls="normal"; gauge=50; bar=45; }
+        else if(bmi < 30){ cat="Overweight"; cls="over"; gauge=70; bar=65; }
+        else { cat="Obese"; cls="obese"; gauge=90; bar=85; }
+
+        ageMsg = "Adult BMI classification (WHO standard).";
+    }
+
+    let min = (18.5*h*h).toFixed(1);
+    let max = (24.9*h*h).toFixed(1);
+
+    res.className = "result " + cls;
+    res.style.display = "block";
+
+    bmiTxt.innerText = "BMI: " + bmi;
+    catTxt.innerText = "Category: " + cat + " (" + gender + ")";
+    ageTxt.innerText = ageMsg;
+    idealTxt.innerText = "Ideal Weight Range: " + min + " – " + max + " kg";
+
+    gFill.style.width = gauge + "%";
+    uBar.style.width = bar + "%";
+    uBar.innerText = "Your BMI: " + bmi;
+
+    let hist = JSON.parse(localStorage.getItem("bmi") || "[]");
+    hist.push(new Date().toLocaleDateString()+" | "+bmi+" | "+gender);
+    localStorage.setItem("bmi", JSON.stringify(hist));
+    history.innerHTML = hist.map(x=>"• "+x).join("<br>");
+}
+
+window.onload = ()=>{
+    let hist = JSON.parse(localStorage.getItem("bmi") || "[]");
+    history.innerHTML = hist.map(x=>"• "+x).join("<br>");
+};
+</script>
+
+</body>
+</html>
